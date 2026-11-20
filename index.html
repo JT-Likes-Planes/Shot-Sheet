@@ -6,36 +6,71 @@
 <title>Shot Sheet: See the shot before you take it</title>
 <meta name="description" content="Shot Sheet helps photographers align with clients before the shoot.">
 <style>
-  :root { --bg:#F4EFE6; --text:#1B1A17; --card:#E9E2D3; --accent:#E8A33D; --link:#9A5B00; }
-  @media (prefers-color-scheme: dark) {
-    :root { --bg:#1B1A17; --text:#F4EFE6; --card:#2A2825; --link:#E8A33D; }
-  }
+  :root { --bg:#F4EFE6; --text:#1B1A17; --card:#E9E2D3; --accent:#E8A33D; --link:#9A5B00; --line:#C9BFA9; }
+  [data-theme="dark"] { --bg:#1B1A17; --text:#F4EFE6; --card:#2A2825; --link:#E8A33D; --line:#4a453d; }
   * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
   body { margin:0; font-family: system-ui, sans-serif; background:var(--bg); color:var(--text); line-height:1.5; }
   .wrap { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
-  header.hero { padding: 96px 0 64px; text-align: center; }
+  nav { position: sticky; top: 0; z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); }
+  nav .wrap { display:flex; align-items:center; gap:20px; padding-top:12px; padding-bottom:12px; flex-wrap:wrap; }
+  nav a { color: var(--text); text-decoration: none; font-weight: 600; }
+  nav .brand { margin-right:auto; display:flex; align-items:center; gap:10px; font-size:20px; }
+  header.hero { padding: 80px 0 48px; text-align: center; }
   h1 { font-size: clamp(40px, 8vw, 80px); margin: 24px 0 8px; line-height: 1.05; }
   .slogan { font-size: 22px; margin: 0 0 32px; }
-  .btn { display:inline-block; padding:14px 28px; background:var(--accent); color:#1B1A17; border:0; border-radius:10px; font-size:18px; font-weight:600; text-decoration:none; cursor:pointer; }
+  .btn { display:inline-block; padding:12px 24px; background:var(--accent); color:#1B1A17; border:0; border-radius:10px; font-size:17px; font-weight:600; text-decoration:none; cursor:pointer; }
+  .btn.ghost { background:transparent; color:var(--text); border:1px solid var(--line); padding:8px 14px; font-size:15px; }
   section { padding: 56px 0; }
-  h2 { font-size: 36px; margin: 0 0 24px; }
+  h2 { font-size: 36px; margin: 0 0 12px; }
+  .sub { margin: 0 0 28px; opacity: .8; }
   .cards { display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
   .card { background:var(--card); padding: 28px; border-radius: 16px; }
   .card h3 { margin: 0 0 8px; font-size: 22px; }
   .num { font-size: 40px; font-weight: 700; color: var(--link); }
-  form { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; }
-  input[type=email] { padding:14px; font-size:18px; border-radius:10px; border:1px solid #C9BFA9; min-width: 280px; }
+  .big { font-size: 40px; font-weight: 700; }
+  .pair { display:grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+  .swatch { min-height: 150px; border-radius: 14px; border: 3px solid transparent; font-size: 20px; font-weight: 700; cursor: pointer; }
+  .swatch:hover, .swatch:focus-visible { border-color: var(--accent); outline: none; }
+  .tags { display:flex; flex-wrap:wrap; gap:8px; margin: 12px 0; }
+  .tag { background: var(--accent); color:#1B1A17; padding: 6px 14px; border-radius: 999px; font-weight:600; }
+  .bar { height: 12px; background: var(--line); border-radius: 999px; overflow:hidden; margin: 12px 0; }
+  .bar > div { height:100%; width:0; background: var(--accent); transition: width .25s; }
+  ul.shots { list-style:none; padding:0; margin:0; }
+  ul.shots li { display:flex; align-items:center; gap:10px; padding: 8px 0; border-bottom:1px solid var(--line); font-size:18px; }
+  ul.shots li.done span { text-decoration: line-through; opacity:.6; }
+  ul.shots button { margin-left:auto; }
+  input, select { padding:12px; font-size:17px; border-radius:10px; border:1px solid var(--line); background:var(--bg); color:var(--text); }
+  label { display:block; margin: 12px 0 4px; font-weight:600; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; }
+  .switch { display:flex; align-items:center; gap:12px; margin-bottom: 20px; font-weight:600; }
+  details { background:var(--card); border-radius:12px; padding: 16px 20px; margin-bottom: 12px; }
+  summary { cursor:pointer; font-weight:700; font-size:18px; }
+  details p { margin: 10px 0 0; }
+  #msg { margin-top: 14px; font-weight: 600; min-height: 1.5em; }
   footer { padding: 40px 0; text-align:center; opacity:.7; }
+  @media (max-width: 560px) { .pair { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
 
-<header class="hero">
+<nav>
   <div class="wrap">
-    <svg aria-label="Shot Sheet logo" width="96" height="96" viewBox="0 0 240 240">
-      <rect width="240" height="240" rx="48" fill="#E8A33D"/>
-      <path d="M64 96V64h32M144 64h32v32M176 144v32h-32M96 176H64v-32M92 122l20 20 38-44" stroke="#1B1A17" stroke-width="14" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
+    <a class="brand" href="#top">
+      <svg aria-label="Shot Sheet logo" width="32" height="32" viewBox="0 0 240 240"><rect width="240" height="240" rx="48" fill="#E8A33D"/><path d="M64 96V64h32M144 64h32v32M176 144v32h-32M96 176H64v-32M92 122l20 20 38-44" stroke="#1B1A17" stroke-width="14" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Shot Sheet
+    </a>
+    <a href="#demo">Try it</a>
+    <a href="#shots">Shot list</a>
+    <a href="#calc">Savings</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#faq">FAQ</a>
+    <button class="btn ghost" id="theme" type="button">Dark / light</button>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
     <h1>Shot Sheet</h1>
     <p class="slogan">See the shot before you take it.</p>
     <a class="btn" href="#waitlist">Join the waitlist</a>
@@ -45,47 +80,23 @@
 <section>
   <div class="wrap">
     <h2>How it works</h2>
+    <p class="sub">Three steps between the first message and the first frame.</p>
     <div class="cards">
       <div class="card"><div class="num">1</div><h3>Client swipes</h3><p>Your client picks between image pairs for lighting, posing and framing, and flags must-have shots.</p></div>
-      <div class="card"><div class="num">2</div><h3>Style profile</h3><p>Shot Sheet turns their choices into a one-page profile with a prioritized shot list.</p></div>
-      <div class="card"><div class="num">3</div><h3>Shoot-day checklist</h3><p>Tick off shots on your phone as you go. No more guessing what they pictured.</p></div>
+      <div class="card"><div class="num">2</div><h3>Style profile</h3><p>Their choices become a one-page profile with a prioritized shot list.</p></div>
+      <div class="card"><div class="num">3</div><h3>Shoot-day checklist</h3><p>Tick off shots on your phone as you go.</p></div>
     </div>
   </div>
 </section>
 
-<section>
+<section id="demo">
   <div class="wrap">
-    <h2>Why photographers will use it</h2>
-    <div class="cards">
-      <div class="card"><h3>Fewer revisions</h3><p>Expectations are settled before the shoot, not after delivery.</p></div>
-      <div class="card"><h3>Faster shoots</h3><p>A clear shot list means less guessing on the day.</p></div>
-      <div class="card"><h3>Happier clients</h3><p>Clients feel heard from the very first message.</p></div>
-    </div>
+    <h2>Try the client experience</h2>
+    <p class="sub">Pick the option you prefer in each pair. This is what your client would do in about three minutes.</p>
+    <div class="card" id="demoBox"></div>
   </div>
 </section>
 
-<section>
+<section id="shots">
   <div class="wrap">
-    <h2>Pricing</h2>
-    <div class="cards">
-      <div class="card"><h3>Free</h3><p>3 clients per month with standard templates.</p></div>
-      <div class="card"><h3>Pro: about $12/month</h3><p>Unlimited clients, your own portfolio image pairs and branded client links.</p></div>
-      <div class="card"><h3>Add-ons</h3><p>Wedding and event packs with group-shot and family-combination planners.</p></div>
-    </div>
-  </div>
-</section>
-
-<section id="waitlist">
-  <div class="wrap" style="text-align:center">
-    <h2>Be first to try it</h2>
-    <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
-      <input type="email" name="email" placeholder="you@example.com" required>
-      <button class="btn" type="submit">Join the waitlist</button>
-    </form>
-  </div>
-</section>
-
-<footer>© 2026 Shot Sheet</footer>
-
-</body>
-</html>
+    <h2>Build a shot list</h2>
