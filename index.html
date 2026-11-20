@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shot Sheet: See the shot before you take it</title>
+<meta name="description" content="Shot Sheet helps photographers align with clients before the shoot.">
+<style>
+  :root { --bg:#F4EFE6; --text:#1B1A17; --card:#E9E2D3; --accent:#E8A33D; --link:#9A5B00; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#1B1A17; --text:#F4EFE6; --card:#2A2825; --link:#E8A33D; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: system-ui, sans-serif; background:var(--bg); color:var(--text); line-height:1.5; }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+  header.hero { padding: 96px 0 64px; text-align: center; }
+  h1 { font-size: clamp(40px, 8vw, 80px); margin: 24px 0 8px; line-height: 1.05; }
+  .slogan { font-size: 22px; margin: 0 0 32px; }
+  .btn { display:inline-block; padding:14px 28px; background:var(--accent); color:#1B1A17; border:0; border-radius:10px; font-size:18px; font-weight:600; text-decoration:none; cursor:pointer; }
+  section { padding: 56px 0; }
+  h2 { font-size: 36px; margin: 0 0 24px; }
+  .cards { display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+  .card { background:var(--card); padding: 28px; border-radius: 16px; }
+  .card h3 { margin: 0 0 8px; font-size: 22px; }
+  .num { font-size: 40px; font-weight: 700; color: var(--link); }
+  form { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; }
+  input[type=email] { padding:14px; font-size:18px; border-radius:10px; border:1px solid #C9BFA9; min-width: 280px; }
+  footer { padding: 40px 0; text-align:center; opacity:.7; }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <svg aria-label="Shot Sheet logo" width="96" height="96" viewBox="0 0 240 240">
+      <rect width="240" height="240" rx="48" fill="#E8A33D"/>
+      <path d="M64 96V64h32M144 64h32v32M176 144v32h-32M96 176H64v-32M92 122l20 20 38-44" stroke="#1B1A17" stroke-width="14" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <h1>Shot Sheet</h1>
+    <p class="slogan">See the shot before you take it.</p>
+    <a class="btn" href="#waitlist">Join the waitlist</a>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2>How it works</h2>
+    <div class="cards">
+      <div class="card"><div class="num">1</div><h3>Client swipes</h3><p>Your client picks between image pairs for lighting, posing and framing, and flags must-have shots.</p></div>
+      <div class="card"><div class="num">2</div><h3>Style profile</h3><p>Shot Sheet turns their choices into a one-page profile with a prioritized shot list.</p></div>
+      <div class="card"><div class="num">3</div><h3>Shoot-day checklist</h3><p>Tick off shots on your phone as you go. No more guessing what they pictured.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Why photographers will use it</h2>
+    <div class="cards">
+      <div class="card"><h3>Fewer revisions</h3><p>Expectations are settled before the shoot, not after delivery.</p></div>
+      <div class="card"><h3>Faster shoots</h3><p>A clear shot list means less guessing on the day.</p></div>
+      <div class="card"><h3>Happier clients</h3><p>Clients feel heard from the very first message.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Pricing</h2>
+    <div class="cards">
+      <div class="card"><h3>Free</h3><p>3 clients per month with standard templates.</p></div>
+      <div class="card"><h3>Pro: about $12/month</h3><p>Unlimited clients, your own portfolio image pairs and branded client links.</p></div>
+      <div class="card"><h3>Add-ons</h3><p>Wedding and event packs with group-shot and family-combination planners.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="waitlist">
+  <div class="wrap" style="text-align:center">
+    <h2>Be first to try it</h2>
+    <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+      <input type="email" name="email" placeholder="you@example.com" required>
+      <button class="btn" type="submit">Join the waitlist</button>
+    </form>
+  </div>
+</section>
+
+<footer>© 2026 Shot Sheet</footer>
+
+</body>
+</html>
