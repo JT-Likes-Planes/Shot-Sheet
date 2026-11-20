@@ -100,3 +100,215 @@
 <section id="shots">
   <div class="wrap">
     <h2>Build a shot list</h2>
+    <p class="sub">Add the shots a client wants and tick them off as you shoot. This demo isn't saved when you leave.</p>
+    <div class="card">
+      <div class="row">
+        <input id="shotIn" placeholder="e.g. First look" aria-label="New shot">
+        <button class="btn" id="shotAdd" type="button">Add shot</button>
+      </div>
+      <div class="bar" aria-hidden="true"><div id="prog"></div></div>
+      <p id="progText">No shots yet.</p>
+      <ul class="shots" id="shotList"></ul>
+    </div>
+  </div>
+</section>
+
+<section id="calc">
+  <div class="wrap">
+    <h2>What could you save?</h2>
+    <p class="sub">Revisions cost time. Change the numbers to match your business.</p>
+    <div class="cards">
+      <div class="card">
+        <label for="cClients">Clients per month</label>
+        <input id="cClients" type="number" min="0" value="8">
+        <label for="cHours">Hours spent on revisions per client</label>
+        <input id="cHours" type="number" min="0" step="0.5" value="3">
+        <label for="cRate">Your hourly rate ($)</label>
+        <input id="cRate" type="number" min="0" value="60">
+        <label for="cCut">Revision time cut by <span id="cCutVal">50</span>% (an assumption you can change)</label>
+        <input id="cCut" type="range" min="10" max="90" value="50">
+      </div>
+      <div class="card">
+        <h3>Estimated monthly savings</h3>
+        <div class="big" id="outHours">0 hours</div>
+        <div class="big" id="outMoney">$0</div>
+        <p>This is a rough estimate based on the numbers you entered, not a guarantee.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <h2>Pricing</h2>
+    <label class="switch"><input type="checkbox" id="yearly"> Bill yearly (two months free)</label>
+    <div class="cards">
+      <div class="card"><h3>Free</h3><div class="big">$0</div><p>3 clients per month with standard templates.</p></div>
+      <div class="card"><h3>Pro</h3><div class="big" id="proPrice">$12/mo</div><p id="proNote">Unlimited clients, your own portfolio image pairs and branded client links.</p></div>
+      <div class="card"><h3>Add-ons</h3><div class="big">Packs</div><p>Wedding and event packs with group-shot and family-combination planners.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <h2>Questions</h2>
+    <details><summary>Does my client need an account?</summary><p>No. They open a link on their phone, make their choices and are done.</p></details>
+    <details><summary>Can I use my own photos?</summary><p>Yes, on the Pro plan you can build image pairs from your own portfolio.</p></details>
+    <details><summary>Does it work on my phone?</summary><p>The client link and the shoot-day checklist are designed for phones. A desktop app is also in development.</p></details>
+    <details><summary>What kinds of shoots is it for?</summary><p>Portraits, weddings, families and brand work, anywhere a client has a look in mind.</p></details>
+  </div>
+</section>
+
+<section id="waitlist">
+  <div class="wrap" style="text-align:center">
+    <h2>Be first to try it</h2>
+    <form id="wl" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" class="row" style="justify-content:center">
+      <input type="email" name="email" id="email" placeholder="you@example.com" required aria-label="Email address" style="min-width:280px">
+      <button class="btn" type="submit">Join the waitlist</button>
+    </form>
+    <div id="msg" role="status"></div>
+  </div>
+</section>
+
+<footer>© 2026 Shot Sheet</footer>
+
+<script>
+const $ = s => document.querySelector(s);
+const root = document.documentElement;
+
+/* Theme toggle, remembered between visits */
+let saved = null;
+try { saved = localStorage.getItem('theme'); } catch (e) {}
+root.dataset.theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+$('#theme').onclick = () => {
+  const t = root.dataset.theme === 'dark' ? 'light' : 'dark';
+  root.dataset.theme = t;
+  try { localStorage.setItem('theme', t); } catch (e) {}
+};
+
+/* Style demo */
+const PAIRS = [
+  { key: 'Lighting', a: ['Bright and airy', 'linear-gradient(135deg,#fff7e0,#ffe3a3)', '#1B1A17'],
+                      b: ['Dark and moody', 'linear-gradient(135deg,#2b2623,#6b4a2f)', '#F4EFE6'] },
+  { key: 'Posing',   a: ['Posed', 'linear-gradient(135deg,#dfe9f3,#b8cde3)', '#1B1A17'],
+                      b: ['Candid', 'linear-gradient(135deg,#f3e0d6,#e8b9a0)', '#1B1A17'] },
+  { key: 'Framing',  a: ['Tight crop', 'linear-gradient(135deg,#d9e8d5,#9cc490)', '#1B1A17'],
+                      b: ['Wide scene', 'linear-gradient(135deg,#ccd6e0,#7f98b3)', '#1B1A17'] },
+  { key: 'Palette',  a: ['Warm tones', 'linear-gradient(135deg,#f6c26b,#d9772b)', '#1B1A17'],
+                      b: ['Cool tones', 'linear-gradient(135deg,#5d7fa3,#2f4a6b)', '#F4EFE6'] }
+];
+let step = 0, answers = [];
+
+function mk(tag, text, cls) {
+  const e = document.createElement(tag);
+  if (text) e.textContent = text;
+  if (cls) e.className = cls;
+  return e;
+}
+
+function renderDemo() {
+  const box = $('#demoBox');
+  box.replaceChildren();
+  if (step < PAIRS.length) {
+    const p = PAIRS[step];
+    box.append(mk('h3', 'Question ' + (step + 1) + ' of ' + PAIRS.length + ': ' + p.key));
+    const pair = mk('div', '', 'pair');
+    [p.a, p.b].forEach(opt => {
+      const b = mk('button', opt[0], 'swatch');
+      b.type = 'button';
+      b.style.background = opt[1];
+      b.style.color = opt[2];
+      b.onclick = () => { answers.push(p.key + ': ' + opt[0]); step++; renderDemo(); };
+      pair.append(b);
+    });
+    box.append(pair);
+  } else {
+    box.append(mk('h3', 'Your style profile'));
+    const tags = mk('div', '', 'tags');
+    answers.forEach(a => tags.append(mk('span', a, 'tag')));
+    box.append(tags);
+    box.append(mk('p', 'In the real app, this profile becomes a one-page summary and a prioritized shot list.'));
+    const again = mk('button', 'Start over', 'btn');
+    again.type = 'button';
+    again.onclick = () => { step = 0; answers = []; renderDemo(); };
+    box.append(again);
+  }
+}
+renderDemo();
+
+/* Shot list builder */
+let shots = [];
+function renderShots() {
+  const ul = $('#shotList');
+  ul.replaceChildren();
+  shots.forEach((s, i) => {
+    const li = mk('li', '', s.done ? 'done' : '');
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.checked = s.done;
+    cb.setAttribute('aria-label', 'Done: ' + s.t);
+    cb.onchange = () => { s.done = cb.checked; renderShots(); };
+    const del = mk('button', 'Remove', 'btn ghost');
+    del.type = 'button';
+    del.onclick = () => { shots.splice(i, 1); renderShots(); };
+    li.append(cb, mk('span', s.t), del);
+    ul.append(li);
+  });
+  const done = shots.filter(s => s.done).length;
+  $('#prog').style.width = shots.length ? (done / shots.length * 100) + '%' : '0';
+  $('#progText').textContent = shots.length ? done + ' of ' + shots.length + ' shots done' : 'No shots yet.';
+}
+function addShot() {
+  const v = $('#shotIn').value.trim();
+  if (!v) return;
+  shots.push({ t: v, done: false });
+  $('#shotIn').value = '';
+  renderShots();
+}
+$('#shotAdd').onclick = addShot;
+$('#shotIn').onkeydown = e => { if (e.key === 'Enter') addShot(); };
+renderShots();
+
+/* Savings calculator */
+function calc() {
+  const c = Math.max(0, +$('#cClients').value || 0);
+  const h = Math.max(0, +$('#cHours').value || 0);
+  const r = Math.max(0, +$('#cRate').value || 0);
+  const cut = +$('#cCut').value;
+  $('#cCutVal').textContent = cut;
+  const hours = c * h * cut / 100;
+  $('#outHours').textContent = hours.toFixed(1) + ' hours';
+  $('#outMoney').textContent = '$' + Math.round(hours * r).toLocaleString();
+}
+['#cClients', '#cHours', '#cRate', '#cCut'].forEach(id => $(id).addEventListener('input', calc));
+calc();
+
+/* Pricing switch (placeholder prices, change as you like) */
+$('#yearly').onchange = e => {
+  $('#proPrice').textContent = e.target.checked ? '$120/yr' : '$12/mo';
+};
+
+/* Waitlist */
+$('#wl').onsubmit = async e => {
+  e.preventDefault();
+  const form = e.target, msg = $('#msg');
+  if (form.action.includes('YOUR_FORM_ID')) {
+    msg.textContent = 'Form not connected yet: add your Formspree form ID in the page code.';
+    return;
+  }
+  try {
+    const res = await fetch(form.action, {
+      method: 'POST',
+      headers: { 'Accept': 'application/json' },
+      body: new FormData(form)
+    });
+    if (res.ok) { msg.textContent = "Thanks! You're on the list."; form.reset(); }
+    else { msg.textContent = 'Something went wrong. Please try again.'; }
+  } catch (err) {
+    msg.textContent = 'Network error. Please try again.';
+  }
+};
+</script>
+</body>
+</html>
